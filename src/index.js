@@ -179,19 +179,49 @@ const fourthRowKeys = [
 
 const copyedFourthRowKeys = [...fourthRowKeys];
 
-// document.addEventListener('keydown', (e) => {
-//   fourthRowKeys.push(e.key);
-//   console.log(fourthRowKeys);
-// });
+/* ============================================== */
+
+/* Fifth Row */
+
+const keyboardFifthRow = document.createElement('div');
+keyboardFifthRow.classList.add('keyboard-row');
+keyboard.append(keyboardFifthRow);
+
+const fifthRowKeysCodes = [
+  'ControlLeft',
+  'AltLeft',
+  'Space',
+  'AltRight',
+  'ArrowLeft',
+  'ArrowDown',
+  'ArrowRight',
+  'ControlRight',
+];
+
+const fifthRowKeys = [
+  'Control',
+  'Alt',
+  ' ',
+  'Alt',
+  'ArrowLeft',
+  'ArrowDown',
+  'ArrowRight',
+  'Control',
+];
+
+const copyedFifthRowKeys = [...fifthRowKeys];
 
 const renderKeyboardKey = (key, rowKeys, rowKeysCodes) => {
   const keyboardKey = document.createElement('button');
   keyboardKey.classList.add('keyboard-key');
-  if (key === 'Backspace' || key === 'Tab' || key === 'CapsLock' || key === 'Enter' || key === 'Shift') keyboardKey.classList.add('flex-grow');
+  if (key === 'Backspace' || key === 'Tab' || key === 'CapsLock' || key === 'Enter' || key === 'Shift' || key === ' ') keyboardKey.classList.add('flex-grow');
   keyboardKey.dataset.key = rowKeysCodes[rowKeys.indexOf(key)];
   rowKeys.splice(rowKeys.indexOf(key), 1, '');
   keyboardKey.textContent = key;
   if (key === 'ArrowUp') keyboardKey.textContent = '↑';
+  if (key === 'ArrowLeft') keyboardKey.textContent = '←';
+  if (key === 'ArrowDown') keyboardKey.textContent = '↓';
+  if (key === 'ArrowRight') keyboardKey.textContent = '→';
   return keyboardKey;
 };
 
@@ -211,17 +241,27 @@ fourthRowKeys.forEach((key) => {
   keyboardFourthRow.append(renderKeyboardKey(key, copyedFourthRowKeys, fourthRowKeysCodes));
 });
 
+fifthRowKeys.forEach((key) => {
+  keyboardFifthRow.append(renderKeyboardKey(key, copyedFifthRowKeys, fifthRowKeysCodes));
+});
+
 document.addEventListener('keydown', (e) => {
   document.querySelector('.output').focus();
+
   if (e.code === 'Tab') {
     e.preventDefault();
     output.setRangeText('    ', output.selectionStart, output.selectionEnd, 'end');
   }
+
+  if (e.code === 'AltLeft' || e.code === 'AltRight') {
+    e.preventDefault();
+  }
+
   const key = document.querySelector(`[data-key=${e.code}]`);
   if (key) key.classList.add('active');
 });
 
-document.addEventListener('keyup', (e) => {
+window.addEventListener('keyup', (e) => {
   const key = document.querySelector(`[data-key=${e.code}]`);
   if (key) key.classList.remove('active');
 });
