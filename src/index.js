@@ -39,6 +39,14 @@ const keyboard = document.createElement('div');
 keyboard.classList.add('keyboard');
 body.append(keyboard);
 
+const info = document.createElement('p');
+info.classList.add('info');
+info.textContent = `
+  Клавиатура создана в операционной системе Windows.
+  Переключение языка не реализовано
+`;
+body.append(info);
+
 const shiftAndCapsMode = {};
 
 const copyedFirstRowKeys = [...firstRowKeys];
