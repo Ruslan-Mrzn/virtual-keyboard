@@ -1,0 +1,13 @@
+.keyboard {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  row-gap: 10px;
+
+  padding: 10px;
+
+  background-color: grey;
+}
