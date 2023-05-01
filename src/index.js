@@ -1,5 +1,17 @@
 import './sass/styles.scss';
 
+let keyboardSettings;
+
+if (localStorage.getItem('keyboardSettings')) {
+  keyboardSettings = JSON.parse(localStorage.getItem('keyboardSettings'));
+}
+if (!localStorage.getItem('keyboardSettings')) {
+  keyboardSettings = {
+    capsMode: false,
+  };
+  localStorage.setItem('keyboardSettings', JSON.stringify(keyboardSettings));
+}
+
 const { body } = document;
 
 const output = document.createElement('textarea');
@@ -211,17 +223,55 @@ const fifthRowKeys = [
 
 const copyedFifthRowKeys = [...fifthRowKeys];
 
+/* ============================================== */
+
+/* CapsMode Keys */
+
+const capsModeKeys = [
+  'KeyQ',
+  'KeyW',
+  'KeyE',
+  'KeyR',
+  'KeyT',
+  'KeyY',
+  'KeyU',
+  'KeyI',
+  'KeyO',
+  'KeyP',
+  'KeyA',
+  'KeyS',
+  'KeyD',
+  'KeyF',
+  'KeyG',
+  'KeyH',
+  'KeyJ',
+  'KeyK',
+  'KeyL',
+  'KeyZ',
+  'KeyX',
+  'KeyC',
+  'KeyV',
+  'KeyB',
+  'KeyN',
+  'KeyM',
+];
+
+/* ============================================== */
+
 const renderKeyboardKey = (key, rowKeys, rowKeysCodes) => {
   const keyboardKey = document.createElement('button');
   keyboardKey.classList.add('keyboard-key');
   if (key === 'Backspace' || key === 'Tab' || key === 'CapsLock' || key === 'Enter' || key === 'Shift' || key === ' ') keyboardKey.classList.add('flex-grow');
+  if (key === 'CapsLock' && keyboardSettings.capsMode) keyboardKey.classList.add('power-on');
   keyboardKey.dataset.key = rowKeysCodes[rowKeys.indexOf(key)];
-  rowKeys.splice(rowKeys.indexOf(key), 1, '');
   keyboardKey.textContent = key;
   if (key === 'ArrowUp') keyboardKey.textContent = '↑';
   if (key === 'ArrowLeft') keyboardKey.textContent = '←';
   if (key === 'ArrowDown') keyboardKey.textContent = '↓';
   if (key === 'ArrowRight') keyboardKey.textContent = '→';
+  if (capsModeKeys.some((keyCode) => rowKeysCodes[rowKeys.indexOf(key)] === keyCode)
+    && keyboardSettings.capsMode) keyboardKey.textContent = key.toUpperCase();
+  rowKeys.splice(rowKeys.indexOf(key), 1, '');
   return keyboardKey;
 };
 
@@ -248,6 +298,26 @@ fifthRowKeys.forEach((key) => {
 document.addEventListener('keydown', (e) => {
   document.querySelector('.output').focus();
 
+  if (e.code === 'CapsLock') {
+    if (!e.repeat) {
+      keyboardSettings.capsMode = !keyboardSettings.capsMode;
+      localStorage.setItem('keyboardSettings', JSON.stringify(keyboardSettings));
+      document.querySelector(`[data-key=${e.code}]`).classList.toggle('power-on');
+      capsModeKeys.forEach((keyCode) => {
+        const key = document.querySelector(`[data-key=${keyCode}]`);
+        const currentText = key.textContent;
+        if (keyboardSettings.capsMode) key.textContent = currentText.toLocaleUpperCase();
+        if (!keyboardSettings.capsMode) key.textContent = currentText.toLocaleLowerCase();
+      });
+    }
+  }
+
+  if (capsModeKeys.some((keyCode) => keyCode === e.code)) {
+    e.preventDefault();
+    const key = document.querySelector(`[data-key=${e.code}]`);
+    output.setRangeText(`${key.textContent}`, output.selectionStart, output.selectionEnd, 'end');
+  }
+
   if (e.code === 'Tab') {
     e.preventDefault();
     output.setRangeText('    ', output.selectionStart, output.selectionEnd, 'end');
@@ -265,3 +335,8 @@ window.addEventListener('keyup', (e) => {
   const key = document.querySelector(`[data-key=${e.code}]`);
   if (key) key.classList.remove('active');
 });
+
+// document.addEventListener('keydown', (e) => {
+//   capsModeKeys.push(e.code);
+//   console.log(capsModeKeys);
+// });
