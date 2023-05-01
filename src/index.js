@@ -258,6 +258,82 @@ const capsModeKeys = [
 
 /* ============================================== */
 
+/* ShiftMode Keys */
+
+const shiftModeKeys = [
+  'Backquote',
+  'Digit1',
+  'Digit2',
+  'Digit3',
+  'Digit4',
+  'Digit5',
+  'Digit6',
+  'Digit7',
+  'Digit8',
+  'Digit9',
+  'Digit0',
+  'Minus',
+  'Equal',
+  'BracketLeft',
+  'BracketRight',
+  'Backslash',
+  'Semicolon',
+  'Quote',
+  'Comma',
+  'Period',
+  'Slash',
+];
+
+const shiftModeKeysActiveValues = [
+  '~',
+  '!',
+  '@',
+  '#',
+  '$',
+  '%',
+  '^',
+  '&',
+  '*',
+  '(',
+  ')',
+  '_',
+  '+',
+  '{',
+  '}',
+  '|',
+  ':',
+  '"',
+  '<',
+  '>',
+  '?',
+];
+
+const shiftModeKeysInactiveValues = [
+  '`',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '0',
+  '-',
+  '=',
+  '[',
+  ']',
+  '\\',
+  ';',
+  "'",
+  ',',
+  '.',
+  '/',
+];
+
+/* ============================================== */
+
 const renderKeyboardKey = (key, rowKeys, rowKeysCodes) => {
   const keyboardKey = document.createElement('button');
   keyboardKey.classList.add('keyboard-key');
@@ -295,11 +371,34 @@ fifthRowKeys.forEach((key) => {
   keyboardFifthRow.append(renderKeyboardKey(key, copyedFifthRowKeys, fifthRowKeysCodes));
 });
 
+const shiftAndCapsMode = {};
+
 document.addEventListener('keydown', (e) => {
   document.querySelector('.output').focus();
 
+  if (shiftModeKeys.some((keyCode) => keyCode === e.code)) {
+    e.preventDefault();
+    const key = document.querySelector(`[data-key=${e.code}]`);
+    output.setRangeText(`${key.textContent}`, output.selectionStart, output.selectionEnd, 'end');
+  }
+
+  if (e.key === 'Shift') {
+    shiftAndCapsMode[e.key] = true;
+    shiftModeKeys.forEach((keyCode, index) => {
+      const key = document.querySelector(`[data-key=${keyCode}]`);
+      key.textContent = shiftModeKeysActiveValues[index];
+    });
+    capsModeKeys.forEach((keyCode) => {
+      const key = document.querySelector(`[data-key=${keyCode}]`);
+      const currentText = key.textContent;
+      if (!keyboardSettings.capsMode) key.textContent = currentText.toLocaleUpperCase();
+      if (keyboardSettings.capsMode) key.textContent = currentText.toLocaleLowerCase();
+    });
+  }
+
   if (e.code === 'CapsLock') {
     if (!e.repeat) {
+      shiftAndCapsMode[e.key] = true;
       keyboardSettings.capsMode = !keyboardSettings.capsMode;
       localStorage.setItem('keyboardSettings', JSON.stringify(keyboardSettings));
       document.querySelector(`[data-key=${e.code}]`).classList.toggle('power-on');
@@ -310,6 +409,15 @@ document.addEventListener('keydown', (e) => {
         if (!keyboardSettings.capsMode) key.textContent = currentText.toLocaleLowerCase();
       });
     }
+  }
+
+  if (shiftAndCapsMode.Shift && shiftAndCapsMode.CapsLock) {
+    capsModeKeys.forEach((keyCode) => {
+      const key = document.querySelector(`[data-key=${keyCode}]`);
+      const currentText = key.textContent;
+      if (!keyboardSettings.capsMode) key.textContent = currentText.toLocaleUpperCase();
+      if (keyboardSettings.capsMode) key.textContent = currentText.toLocaleLowerCase();
+    });
   }
 
   if (capsModeKeys.some((keyCode) => keyCode === e.code)) {
@@ -331,12 +439,48 @@ document.addEventListener('keydown', (e) => {
   if (key) key.classList.add('active');
 });
 
-window.addEventListener('keyup', (e) => {
-  const key = document.querySelector(`[data-key=${e.code}]`);
-  if (key) key.classList.remove('active');
+document.addEventListener('keyup', (e) => {
+  const keyboardKey = document.querySelector(`[data-key=${e.code}]`);
+  if (keyboardKey) keyboardKey.classList.remove('active');
+
+  if (e.key === 'CapsLock') {
+    shiftAndCapsMode[e.key] = false;
+  }
+
+  if (e.key === 'Shift') {
+    shiftAndCapsMode[e.key] = false;
+    shiftModeKeys.forEach((keyCode, index) => {
+      const key = document.querySelector(`[data-key=${keyCode}]`);
+      key.textContent = shiftModeKeysInactiveValues[index];
+    });
+    capsModeKeys.forEach((keyCode) => {
+      const key = document.querySelector(`[data-key=${keyCode}]`);
+      const currentText = key.textContent;
+      if (keyboardSettings.capsMode) key.textContent = currentText.toLocaleUpperCase();
+      if (!keyboardSettings.capsMode) key.textContent = currentText.toLocaleLowerCase();
+    });
+  }
+
+  if (shiftAndCapsMode.Shift) {
+    capsModeKeys.forEach((keyCode) => {
+      const key = document.querySelector(`[data-key=${keyCode}]`);
+      const currentText = key.textContent;
+      if (!keyboardSettings.capsMode) key.textContent = currentText.toLocaleUpperCase();
+      if (keyboardSettings.capsMode) key.textContent = currentText.toLocaleLowerCase();
+    });
+  }
+
+  if (!shiftAndCapsMode.Shift) {
+    capsModeKeys.forEach((keyCode) => {
+      const key = document.querySelector(`[data-key=${keyCode}]`);
+      const currentText = key.textContent;
+      if (keyboardSettings.capsMode) key.textContent = currentText.toLocaleUpperCase();
+      if (!keyboardSettings.capsMode) key.textContent = currentText.toLocaleLowerCase();
+    });
+  }
 });
 
 // document.addEventListener('keydown', (e) => {
-//   capsModeKeys.push(e.code);
-//   console.log(capsModeKeys);
+//   shiftModeKeysInactiveValues.push(e.key);
+//   console.log(shiftModeKeysInactiveValues);
 // });
