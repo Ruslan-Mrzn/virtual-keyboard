@@ -50,6 +50,8 @@ const firstRowKeys = [
   'Backspace',
 ];
 
+const copyedFirstRowKeys = [...firstRowKeys];
+
 /* ============================================== */
 
 /* Second Row */
@@ -93,6 +95,8 @@ const secondRowKeys = [
   'Delete',
 ];
 
+const copyedSecondRowKeys = [...secondRowKeys];
+
 /* ============================================== */
 
 /* Third Row */
@@ -132,37 +136,85 @@ const thirdRowKeys = [
   'Enter',
 ];
 
+const copyedThirdRowKeys = [...thirdRowKeys];
+
+/* ============================================== */
+
+/* Fourth Row */
+const keyboardFourthRow = document.createElement('div');
+keyboardFourthRow.classList.add('keyboard-row');
+keyboard.append(keyboardFourthRow);
+
+const fourthRowKeysCodes = [
+  'ShiftLeft',
+  'KeyZ',
+  'KeyX',
+  'KeyC',
+  'KeyV',
+  'KeyB',
+  'KeyN',
+  'KeyM',
+  'Comma',
+  'Period',
+  'Slash',
+  'ArrowUp',
+  'ShiftRight',
+];
+
+const fourthRowKeys = [
+  'Shift',
+  'z',
+  'x',
+  'c',
+  'v',
+  'b',
+  'n',
+  'm',
+  ',',
+  '.',
+  '/',
+  'ArrowUp',
+  'Shift',
+];
+
+const copyedFourthRowKeys = [...fourthRowKeys];
+
 // document.addEventListener('keydown', (e) => {
-//   thirdRowKeys.push(e.key);
-//   console.log(thirdRowKeys);
+//   fourthRowKeys.push(e.key);
+//   console.log(fourthRowKeys);
 // });
 
 const renderKeyboardKey = (key, rowKeys, rowKeysCodes) => {
   const keyboardKey = document.createElement('button');
   keyboardKey.classList.add('keyboard-key');
-  if (key === 'Backspace' || key === 'Tab' || key === 'CapsLock' || key === 'Enter') keyboardKey.classList.add('flex-grow');
+  if (key === 'Backspace' || key === 'Tab' || key === 'CapsLock' || key === 'Enter' || key === 'Shift') keyboardKey.classList.add('flex-grow');
   keyboardKey.dataset.key = rowKeysCodes[rowKeys.indexOf(key)];
+  rowKeys.splice(rowKeys.indexOf(key), 1, '');
   keyboardKey.textContent = key;
+  if (key === 'ArrowUp') keyboardKey.textContent = '↑';
   return keyboardKey;
 };
 
 firstRowKeys.forEach((key) => {
-  keyboardFirstRow.append(renderKeyboardKey(key, firstRowKeys, firstRowKeysCodes));
+  keyboardFirstRow.append(renderKeyboardKey(key, copyedFirstRowKeys, firstRowKeysCodes));
 });
 
 secondRowKeys.forEach((key) => {
-  keyboardSecondRow.append(renderKeyboardKey(key, secondRowKeys, secondRowKeysCodes));
+  keyboardSecondRow.append(renderKeyboardKey(key, copyedSecondRowKeys, secondRowKeysCodes));
 });
 
 thirdRowKeys.forEach((key) => {
-  keyboardThirdRow.append(renderKeyboardKey(key, thirdRowKeys, thirdRowKeysCodes));
+  keyboardThirdRow.append(renderKeyboardKey(key, copyedThirdRowKeys, thirdRowKeysCodes));
+});
+
+fourthRowKeys.forEach((key) => {
+  keyboardFourthRow.append(renderKeyboardKey(key, copyedFourthRowKeys, fourthRowKeysCodes));
 });
 
 document.addEventListener('keydown', (e) => {
   document.querySelector('.output').focus();
   if (e.code === 'Tab') {
     e.preventDefault();
-    console.log(output.selectionStart);
     output.setRangeText('    ', output.selectionStart, output.selectionEnd, 'end');
   }
   const key = document.querySelector(`[data-key=${e.code}]`);
