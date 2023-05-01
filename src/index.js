@@ -95,15 +95,52 @@ const secondRowKeys = [
 
 /* ============================================== */
 
+/* Third Row */
+const keyboardThirdRow = document.createElement('div');
+keyboardThirdRow.classList.add('keyboard-row');
+keyboard.append(keyboardThirdRow);
+
+const thirdRowKeysCodes = [
+  'CapsLock',
+  'KeyA',
+  'KeyS',
+  'KeyD',
+  'KeyF',
+  'KeyG',
+  'KeyH',
+  'KeyJ',
+  'KeyK',
+  'KeyL',
+  'Semicolon',
+  'Quote',
+  'Enter',
+];
+
+const thirdRowKeys = [
+  'CapsLock',
+  'a',
+  's',
+  'd',
+  'f',
+  'g',
+  'h',
+  'j',
+  'k',
+  'l',
+  ';',
+  "'",
+  'Enter',
+];
+
 // document.addEventListener('keydown', (e) => {
-//   secondRowKeys.push(e.key);
-//   console.log(secondRowKeys);
+//   thirdRowKeys.push(e.key);
+//   console.log(thirdRowKeys);
 // });
 
 const renderKeyboardKey = (key, rowKeys, rowKeysCodes) => {
   const keyboardKey = document.createElement('button');
   keyboardKey.classList.add('keyboard-key');
-  if (key === 'Backspace' || key === 'Tab') keyboardKey.classList.add('flex-grow');
+  if (key === 'Backspace' || key === 'Tab' || key === 'CapsLock' || key === 'Enter') keyboardKey.classList.add('flex-grow');
   keyboardKey.dataset.key = rowKeysCodes[rowKeys.indexOf(key)];
   keyboardKey.textContent = key;
   return keyboardKey;
@@ -117,17 +154,16 @@ secondRowKeys.forEach((key) => {
   keyboardSecondRow.append(renderKeyboardKey(key, secondRowKeys, secondRowKeysCodes));
 });
 
+thirdRowKeys.forEach((key) => {
+  keyboardThirdRow.append(renderKeyboardKey(key, thirdRowKeys, thirdRowKeysCodes));
+});
+
 document.addEventListener('keydown', (e) => {
   document.querySelector('.output').focus();
   if (e.code === 'Tab') {
     e.preventDefault();
     console.log(output.selectionStart);
     output.setRangeText('    ', output.selectionStart, output.selectionEnd, 'end');
-    // const text = output.value;
-
-    // const firstChunkText = text.slice(0, output.selectionStart);
-    // const secondChunkText = text.slice(output.selectionStart);
-    // output.value = `${firstChunkText}    ${secondChunkText}`;
   }
   const key = document.querySelector(`[data-key=${e.code}]`);
   if (key) key.classList.add('active');
