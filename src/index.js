@@ -52,26 +52,83 @@ const firstRowKeys = [
 
 /* ============================================== */
 
-document.addEventListener('keydown', (e) => {
-  firstRowKeysCodes.push(e.code);
-  console.log(firstRowKeysCodes);
-});
+/* Second Row */
+const keyboardSecondRow = document.createElement('div');
+keyboardSecondRow.classList.add('keyboard-row');
+keyboard.append(keyboardSecondRow);
 
-const renderKeyboardKey = (key) => {
+const secondRowKeysCodes = [
+  'Tab',
+  'KeyQ',
+  'KeyW',
+  'KeyE',
+  'KeyR',
+  'KeyT',
+  'KeyY',
+  'KeyU',
+  'KeyI',
+  'KeyO',
+  'KeyP',
+  'BracketLeft',
+  'BracketRight',
+  'Backslash',
+  'Delete',
+];
+
+const secondRowKeys = [
+  'Tab',
+  'q',
+  'w',
+  'e',
+  'r',
+  't',
+  'y',
+  'u',
+  'i',
+  'o',
+  'p',
+  '[',
+  ']',
+  '\\',
+  'Delete',
+];
+
+/* ============================================== */
+
+// document.addEventListener('keydown', (e) => {
+//   secondRowKeys.push(e.key);
+//   console.log(secondRowKeys);
+// });
+
+const renderKeyboardKey = (key, rowKeys, rowKeysCodes) => {
   const keyboardKey = document.createElement('button');
   keyboardKey.classList.add('keyboard-key');
-  if (key === 'Backspace') keyboardKey.classList.add('flex-grow');
-  keyboardKey.dataset.key = firstRowKeysCodes[firstRowKeys.indexOf(key)];
+  if (key === 'Backspace' || key === 'Tab') keyboardKey.classList.add('flex-grow');
+  keyboardKey.dataset.key = rowKeysCodes[rowKeys.indexOf(key)];
   keyboardKey.textContent = key;
   return keyboardKey;
 };
 
 firstRowKeys.forEach((key) => {
-  keyboardFirstRow.append(renderKeyboardKey(key));
+  keyboardFirstRow.append(renderKeyboardKey(key, firstRowKeys, firstRowKeysCodes));
+});
+
+secondRowKeys.forEach((key) => {
+  keyboardSecondRow.append(renderKeyboardKey(key, secondRowKeys, secondRowKeysCodes));
 });
 
 document.addEventListener('keydown', (e) => {
   document.querySelector('.output').focus();
+  if (e.code === 'Tab') {
+    e.preventDefault();
+    console.log(output.selectionStart);
+    output.setRangeText('    ', output.selectionStart, output.selectionEnd, 'end');
+    // const text = output.value;
+
+    // const firstChunkText = text.slice(0, output.selectionStart);
+    // const secondChunkText = text.slice(output.selectionStart);
+    // output.value = `${firstChunkText}    ${secondChunkText}`;
+  }
   const key = document.querySelector(`[data-key=${e.code}]`);
   if (key) key.classList.add('active');
 });
