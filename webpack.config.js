@@ -56,7 +56,7 @@ module.exports = {
         onEnd: {
           copy: [
             {
-              source: path.join('src', 'static'),
+              source: path.join('src'),
               destination: 'dist',
             },
           ],
